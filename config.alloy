@@ -1,5 +1,5 @@
 // ========================
-// ALLOY CONFIGURATION FILE
+// ALLOY CONFIGURATION FILE - récupération des Syslog depuis nxlog
 // ========================
 
 logging {
@@ -26,15 +26,15 @@ prometheus.scrape "default" {
 // --- Vers Loki, permet d'envoyer les syslog pour être traités ---
 loki.write "local_loki" {
   endpoint {
-    url = "http://localhost:3100/loki/api/v1/push"
+    url = "http://localhost:3100/loki/api/v1/push"    # A changer si Loki est sur une autre machine
   }
 }
 
 // --- Syslog source (TCP 514) pour NXLog Windows (récupérer les syslog) ---
 loki.source.syslog "windows" {
   listener {
-    address  = "0.0.0.0:514"
-    protocol = "tcp"
+    address  = "0.0.0.0:514"    # Ecoute sur toutes les interfaces et port par défaut
+    protocol = "tcp"    # UDP est aussi possible, il suffit de changer cette valeur
   }
 
   forward_to = [loki.write.local_loki.receiver]
