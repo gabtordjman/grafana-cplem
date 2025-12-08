@@ -1,0 +1,41 @@
+// ========================
+// ALLOY CONFIGURATION FILE
+// ========================
+
+logging {
+  level = "warn"
+}
+
+// --- Prometheus exporter (inchangé) ---
+prometheus.exporter.unix "default" {
+  include_exporter_metrics = true
+  disable_collectors       = ["mdadm"]
+}
+
+prometheus.scrape "default" {
+  targets = array.concat(
+    prometheus.exporter.unix.default.targets,
+    [{
+      job         = "alloy",
+      __address__ = "127.0.0.1:12345",
+    }],
+  )
+  forward_to = []
+}
+
+// --- Vers Loki, permet d'envoyer les syslog pour être traités ---
+loki.write "local_loki" {
+  endpoint {
+    url = "http://localhost:3100/loki/api/v1/push"
+  }
+}
+
+// --- Syslog source (TCP 514) pour NXLog Windows (récupérer les syslog) ---
+loki.source.syslog "windows" {
+  listener {
+    address  = "0.0.0.0:514"
+    protocol = "tcp"
+  }
+
+  forward_to = [loki.write.local_loki.receiver]
+}
