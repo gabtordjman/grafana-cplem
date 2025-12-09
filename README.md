@@ -1,7 +1,14 @@
 # Grafana Logon Monitor
 
+## *still in development, configurations files and dashboard may change in the future !*
+
 ## Overview
 **Grafana Logon Monitor** is a centralized monitoring solution for Windows authentication events. It captures, analyzes, and visualizes in real-time logins, logoffs, and authentication attempts across your Windows infrastructure.
+
+## 📸 Screenshot
+
+![Grafana Logon Monitor Dashboard](dashboard.png)
+*Capture d'écran du tableau de bord*
 
 ## 🎯 Features
 - **Real-time monitoring** of Windows security events (ID 4624, 4625, 4634, 4647)
