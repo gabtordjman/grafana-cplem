@@ -33,7 +33,7 @@ loki.write "local_loki" {
 // --- Syslog source (TCP 514) pour NXLog Windows (récupérer les syslog) ---
 loki.source.syslog "windows" {
   listener {
-    address  = "0.0.0.0:514"
+    address  = "0.0.0.0:514" // Adresse IP et port du syslog
     protocol = "tcp"
   }
 
