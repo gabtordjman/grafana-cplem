@@ -1,40 +1,58 @@
-// ========================
-// ALLOY CONFIGURATION FILE - récupération des Syslog depuis nxlog
-// ========================
-
+// ====================================
+// CONFIG ALLOY - GRAFANA LOGON MONITOR
+// ====================================
 logging {
   level = "warn"
 }
 
-// --- Prometheus exporter (inchangé) ---
-prometheus.exporter.unix "default" {
-  include_exporter_metrics = true
-  disable_collectors       = ["mdadm"]
-}
-
-prometheus.scrape "default" {
-  targets = array.concat(
-    prometheus.exporter.unix.default.targets,
-    [{
-      job         = "alloy",
-      __address__ = "127.0.0.1:12345",
-    }],
-  )
-  forward_to = []
-}
-
-// --- Vers Loki, permet d'envoyer les syslog pour être traités ---
 loki.write "local_loki" {
   endpoint {
-    url = "http://localhost:3100/loki/api/v1/push" 
+    url = "http://localhost:3100/loki/api/v1/push"
   }
 }
 
-// --- Syslog source (TCP 514) pour NXLog Windows (récupérer les syslog) ---
 loki.source.syslog "windows" {
   listener {
     address  = "0.0.0.0:514"
     protocol = "tcp"
+  }
+
+  forward_to = [loki.process.extract_user.receiver]
+}
+
+loki.process "extract_user" {
+  // Étape 1: Extraire l'UTILISATEUR depuis "Nouvelle ouverture de session"
+  stage.regex {
+    expression = "Nouvelle ouverture de session[\\s\\S]*?Nom du compte\\s*:\\s*([^\\s\\t\\n\\r]+)"
+    source = "message"
+  }
+
+  // Étape 2: Extraire la MACHINE
+  stage.regex {
+    expression = "Nom de la station de travail\\s*:\\s*([^\\s\\t\\n\\r-]+)"
+    source = "message"
+  }
+
+  // Étape 3: Extraire service_name (déjà ajouté par NXLog)
+  stage.regex {
+    expression = "service_name=([^\\s\\|]+)"
+    source = "message"
+  }
+
+  // Étape 4: Extraire logon_type (déjà ajouté par NXLog)
+  stage.regex {
+    expression = "logon_type=([^\\s\\|]+)"
+    source = "message"
+  }
+
+  // Étape 5: Créer les labels
+  stage.labels {
+    values = {
+      utilisateur = "{{ .Value0 }}",
+      machine     = "{{ .Value1 }}",
+      service     = "{{ .Value2 }}",
+      type_auth   = "{{ .Value3 }}",
+    }
   }
 
   forward_to = [loki.write.local_loki.receiver]
