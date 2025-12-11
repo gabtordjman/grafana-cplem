@@ -8,10 +8,10 @@
 ## 📸 Screenshot
 
 ![Grafana Logon Monitor Dashboard](dashboard.png)
-*Capture d'écran du tableau de bord*
+*Screenshot of the dashboard*
 
 ## 🎯 Features
-- **Real-time monitoring** of Windows security events (ID 4624, 4625, 4634, 4647)
+- **Real-time monitoring** of Windows security events (ID 4624, 4625, 4634, 4647), and RDP login events (ID 25)
 - **Automatic extraction** of critical information:
   - Authenticated user
   - Source workstation
@@ -24,7 +24,7 @@
 Windows Machines → NXLog → Alloy (Grafana Agent) → Loki → Grafana
 
 ### Components:
-1. **NXLog Community Edition**: Collects Windows Event Logs
+1. **NXLog Community Edition**: Collects Windows Event Logs and send them to desired agent
 2. **Alloy (Grafana Agent)**: Syslog reception + log parsing
 3. **Loki**: Structured log storage
 4. **Grafana**: Visualization and dashboards
@@ -33,20 +33,23 @@ Windows Machines → NXLog → Alloy (Grafana Agent) → Loki → Grafana
 ### Dashboard Sections
 1. **Login Activity Timeline**:
 
-    - Visualization: Time series graph, Pie Chart
+    - Visualization: Time series graph, Pie Chart, Table
 
-    - Purpose: Shows login attempts over time, and a total of all the methods used to login
-    
-    - Refresh Rate: Real-time (10s intervals)
+    - Purpose: Shows login attempts over time, a total of all the methods used to login, who tried to connect and on what service (Windows Authentication, RDP...)
   
-## 🔍 Query
+### Log Ingestion with GELF
 
-```loki
-{service_name="unknown_service"} 
-| pattern `<_> <_> <message>`
-| regexp "Nouvelle ouverture de session[\\s\\S]*?Nom du compte\\s*:\\s*(?P<utilisateur>[^\\s\\t]+)"
-| regexp "Nom de la station de travail\\s*:\\s*(?P<machine>[^\\s\\t-]+)"
-| regexp `(?P<action>L'ouverture de session d'un compte s'est[^\.]+)`
-| line_format "{{.action}}"
-```
-*This query is used to create a table. It's also available in queries/query.loki*
+This project centralizes log collection using the Graylog Extended Log Format (GELF). GELF is a modern, JSON-based structured logging format that overcomes the limitations of traditional syslog by supporting compression, chunking, and a clearly defined, parseable structure
+
+## Ingestion Pipeline
+Logs are ingested into the observability stack through a dedicated GELF listener, which is a common feature in tools like Grafana's logging components
+. This method allows the system to receive structured log data over network protocols such as UDP, providing flexibility for various sources like applications, Docker containers, or syslog forwarders configured to output in GELF format
+
+## Why GELF?
+
+- Structured Data: Logs are ingested as JSON objects, making it easy to parse, query, and extract specific fields (e.g., host, level, message, eventID)
+
+- Efficiency: Supports optional compression to save bandwidth
+
+- Extensibility: Allows for custom fields (prefixed with an underscore _) to be attached to log messages, enabling rich, application-specific context  
+
