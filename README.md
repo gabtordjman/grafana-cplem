@@ -37,15 +37,15 @@ Windows Machines → NXLog → Alloy (Grafana Agent) → Loki → Grafana
 
     - Purpose: Shows login attempts over time, a total of all the methods used to login, who tried to connect and on what service (Windows Authentication, RDP...)
   
-### Log Ingestion with GELF
+## Log Ingestion with GELF
 
 This project centralizes log collection using the Graylog Extended Log Format (GELF). GELF is a modern, JSON-based structured logging format that overcomes the limitations of traditional syslog by supporting compression, chunking, and a clearly defined, parseable structure
 
-## Ingestion Pipeline
+### Ingestion Pipeline
 Logs are ingested into the observability stack through a dedicated GELF listener, which is a common feature in tools like Grafana's logging components
 . This method allows the system to receive structured log data over network protocols such as UDP, providing flexibility for various sources like applications, Docker containers, or syslog forwarders configured to output in GELF format
 
-## Why GELF?
+### Why GELF?
 
 - Structured Data: Logs are ingested as JSON objects, making it easy to parse, query, and extract specific fields (e.g., host, level, message, eventID)
 
