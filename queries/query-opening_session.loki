@@ -1,5 +1,0 @@
-{service_name="unknown_service"} 
-| pattern `<timestamp> <level> <message>`
-| regexp "Nouvelle ouverture de session[\\s\\S]*?Nom du compte\\s*:\\s*(?P<utilisateur>[^\\s\\t]+)[^\\n]*Domaine du compte\\s*:\\s*VMW10SYSLOG"
-| regexp "Nom de la station de travail\\s*:\\s*(?P<machine>[^\\s\\t-]+)"
-| line_format "{{.utilisateur}} a ouvert une session"

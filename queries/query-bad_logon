@@ -1,6 +1,0 @@
-{service_name="unknown_service"} 
-| pattern `<timestamp> <level> <message>`
-| regexp ".*Nom du compte\\s*:\\s*(?P<utilisateur>\\S+)"
-| regexp ".*Domaine du compte\\s*:\\s*(?P<domaine>\\S+)"
-| regexp "Nom de la station de travail\\s*:\\s*(?P<machine>\\S+)"
-| line_format "{{.utilisateur}} ({{.domaine}}) a échoué sur {{.machine}}"
