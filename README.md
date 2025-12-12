@@ -1,6 +1,6 @@
 # Grafana Cross-Platform Log & Event Monitor
 
-## *still in development as you can see by the screenshot. Configurations files and dashboard may change in the future, so be sure to update !*
+## *still in development as of December 12 2025. Configurations files and dashboard may change in the future, so make sur to update*
 
 ## Overview
 **Grafana CPL & EM** is a centralized monitoring solution for Windows and Linux authentication events and system logs. It captures, analyzes, and visualizes in real-time logins, logoffs, authentication attempts and events across your Windows and Linux infrastructure.
