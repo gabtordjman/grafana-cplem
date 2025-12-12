@@ -19,7 +19,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -70,7 +70,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Erreurs Linux"
+                "value": "Evènements/Erreurs Linux"
               },
               {
                 "id": "color",
@@ -377,6 +377,18 @@
                 "value": 156
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Utilisateur"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 119
+              }
+            ]
           }
         ]
       },
@@ -396,7 +408,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{service_name=\"loki.source.gelf.listen\"} |= ``",
+          "expr": "{job=\"loki.source.gelf.listen\"} | json | _SourceModuleType=\"im_systemd\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -433,6 +445,7 @@
           "options": {
             "excludeByName": {
               "Line": true,
+              "Time": false,
               "_SourceModuleName": true,
               "_SourceModuleType": false,
               "id": true,
@@ -587,7 +600,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 620
+                "value": 697
               }
             ]
           },
@@ -648,9 +661,6 @@
                 "path": "full_message"
               },
               {
-                "path": "_AccountName"
-              },
-              {
                 "path": "_Severity"
               },
               {
@@ -680,7 +690,9 @@
             "indexByName": {},
             "renameByName": {
               "_AccountName": "Utilisateur",
-              "_Severity": "",
+              "_Channel": "Canal",
+              "_Severity": "Sévérité",
+              "_SourceModuleName": "Nom du module",
               "_SourceName": "Source de l'erreur",
               "full_message": "Message"
             }
@@ -694,10 +706,19 @@
                 "config": {
                   "id": "equal",
                   "options": {
-                    "value": "Service Control Manager"
+                    "value": "Application"
                   }
                 },
-                "fieldName": "Source de l'erreur"
+                "fieldName": "Canal"
+              },
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "System"
+                  }
+                },
+                "fieldName": "Canal"
               }
             ],
             "match": "any",
@@ -715,12 +736,12 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Monitor Events and Errors",
   "uid": "addnn7v",
-  "version": 19
+  "version": 25
 }
