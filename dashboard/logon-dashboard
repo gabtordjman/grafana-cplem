@@ -26,6 +26,234 @@
         "type": "loki",
         "uid": "cf6gwgsp02iv4c"
       },
+      "description": "Affiche le total d'echec de connexion de la semaine pour les utilisateurs",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Utilisateur"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 278
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Echecs totaux"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Field"
+          }
+        ]
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (_TargetUserName) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"} \r\n    | json\r\n    | _EventID=\"4776\"\r\n    | _EventType=\"AUDIT_FAILURE\"\r\n    [1w]\r\n  )\r\n)\r\n",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Week Log",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Field": false
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Field": "Utilisateur",
+              "Max": "Echecs totaux"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "cf6gwgsp02iv4c"
+      },
+      "description": "Total des authentifications, qu'elles soient réussies ou non",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{category=\"Authentifications réussies\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#34cb20",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Authentifications reussies"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{category=\"Authentifications échouées\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#e50e0e",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Authentifications échouées"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _EventID=\"4776\" | _EventType=\"AUDIT_SUCCESS\" [1d])),\r\n  \"category\", \"Authentifications réussies\", \"job\", \".*\"\r\n)\r\n",
+          "queryType": "range",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "cf6gwgsp02iv4c"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _EventID=\"4776\" | _EventType=\"AUDIT_FAILURE\" [1d])),\r\n  \"category\", \"Authentifications échouées\", \"job\", \".*\"\r\n)\r\n",
+          "hide": false,
+          "queryType": "range",
+          "refId": "B"
+        }
+      ],
+      "title": "Authentifications",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "cf6gwgsp02iv4c"
+      },
       "description": "Voir qui a ouvert sa session dernièrement",
       "fieldConfig": {
         "defaults": {
@@ -81,7 +309,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 743
+                "value": 249
               },
               {
                 "id": "custom.width",
@@ -193,7 +421,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 310
+                "value": 165
               }
             ]
           },
@@ -227,14 +455,50 @@
               "options": "message"
             },
             "properties": []
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_Channel"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 107
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Utilisateur"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 138
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 161
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 4,
-        "w": 24,
+        "h": 5,
+        "w": 16,
         "x": 0,
-        "y": 0
+        "y": 4
       },
       "id": 5,
       "options": {
@@ -317,21 +581,12 @@
             "filters": [
               {
                 "config": {
-                  "id": "notEqual",
+                  "id": "equal",
                   "options": {
-                    "value": "AUDIT_SUCCESS"
+                    "value": "AUDIT_FAILURE"
                   }
                 },
                 "fieldName": "Type d'évènement"
-              },
-              {
-                "config": {
-                  "id": "notEqual",
-                  "options": {
-                    "value": "25"
-                  }
-                },
-                "fieldName": "ID"
               }
             ],
             "match": "all",
@@ -444,9 +699,9 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 24,
+        "w": 16,
         "x": 0,
-        "y": 4
+        "y": 9
       },
       "id": 9,
       "options": {
@@ -530,21 +785,12 @@
             "filters": [
               {
                 "config": {
-                  "id": "notEqual",
+                  "id": "equal",
                   "options": {
-                    "value": "AUDIT_SUCCESS"
+                    "value": "25"
                   }
                 },
-                "fieldName": "Type d'évènement"
-              },
-              {
-                "config": {
-                  "id": "notEqual",
-                  "options": {
-                    "value": "AUDIT_FAILURE"
-                  }
-                },
-                "fieldName": "Type d'évènement"
+                "fieldName": "ID"
               }
             ],
             "match": "all",
@@ -553,120 +799,6 @@
         }
       ],
       "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "cf6gwgsp02iv4c"
-      },
-      "description": "Total des authentifications, qu'elles soient réussies ou non",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": []
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "{category=\"Authentifications réussies\"}"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#34cb20",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "displayName",
-                "value": "Authentifications reussies"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "{category=\"Authentifications échouées\"}"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#e50e0e",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "displayName",
-                "value": "Authentifications échouées"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 0,
-        "y": 10
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "sort": "desc",
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.3.0",
-      "targets": [
-        {
-          "direction": "backward",
-          "editorMode": "code",
-          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _EventID=\"4776\" | _EventType=\"AUDIT_SUCCESS\" [1d])),\r\n  \"category\", \"Authentifications réussies\", \"job\", \".*\"\r\n)\r\n",
-          "queryType": "range",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "cf6gwgsp02iv4c"
-          },
-          "direction": "backward",
-          "editorMode": "code",
-          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _EventID=\"4776\" | _EventType=\"AUDIT_FAILURE\" [1d])),\r\n  \"category\", \"Authentifications échouées\", \"job\", \".*\"\r\n)\r\n",
-          "hide": false,
-          "queryType": "range",
-          "refId": "B"
-        }
-      ],
-      "title": "Authentifications",
-      "type": "piechart"
     },
     {
       "datasource": {
@@ -770,10 +902,10 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 16,
-        "x": 8,
-        "y": 10
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 13
       },
       "id": 8,
       "options": {
@@ -822,12 +954,12 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Monitor LOGON/LOGOFF",
   "uid": "adb9fmt",
-  "version": 52
+  "version": 57
 }
