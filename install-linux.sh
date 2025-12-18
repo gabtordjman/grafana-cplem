@@ -1,17 +1,17 @@
+#!/bin/bash
+set -e
+
 # NXLog Installation Script for Debian
 # ------------------------------------
 # This script installs NXLog Community Edition on Debian systems.
 # It performs the following steps:
 #   1. Installs required dependencies (git, wget, curl)
-#   2. Uses the NXLog .deb package stored in ./packages/
-#   3. Installs NXLog with dpkg and fixes missing dependencies
-#   4. Copies the configuration file (linux-nxlog.conf) to /etc/nxlog/nxlog.conf
-#   5. Warns the user to check IP and PORT values in the config
-#   6. Enables and starts the NXLog service, then verifies its status
-# Run this script after cloning the repository.
-
-#!/bin/bash
-set -e
+#   2. Clones the Grafana CPL&EM repository
+#   3. Uses the NXLog .deb package stored in ./packages/
+#   4. Installs NXLog with dpkg and fixes missing dependencies
+#   5. Copies the configuration file (linux-nxlog.conf) to /etc/nxlog/nxlog.conf
+#   6. Warns the user to check IP/PORT values in the config
+#   7. Enables and starts the NXLog service, then verifies its status
 
 # Function for interactive pause
 pause_step() {
@@ -32,8 +32,21 @@ pause_step "Step 1: Update system and install prerequisites (git, wget, curl)"
 apt-get update -y
 apt-get install -y git wget curl
 
-# Step 2: Use local package from repo
-pause_step "Step 2: Locate NXLog package in ./packages/"
+# Step 2: Clone repository
+pause_step "Step 2: Clone the Grafana CPL&EM repository"
+REPO_URL="https://github.com/gabtordjman/grafana-cplem.git"
+REPO_DIR="grafana-cplem"
+
+if [ -d "$REPO_DIR" ]; then
+    echo "Repository already exists. Skipping clone."
+else
+    git clone $REPO_URL
+fi
+
+cd $REPO_DIR
+
+# Step 3: Use local NXLog package
+pause_step "Step 3: Locate NXLog package in ./packages/"
 NXLOG_DEB="./packages/nxlog-ce_3.2.2329_debian11_amd64.deb"
 
 if [ ! -f "$NXLOG_DEB" ]; then
@@ -47,16 +60,16 @@ if ! dpkg-deb --info $NXLOG_DEB > /dev/null 2>&1; then
     exit 1
 fi
 
-# Step 3: Install NXLog
-pause_step "Step 3: Install NXLog using dpkg"
+# Step 4: Install NXLog
+pause_step "Step 4: Install NXLog using dpkg"
 dpkg -i $NXLOG_DEB || true
 
-# Step 4: Fix dependencies
-pause_step "Step 4: Fix missing dependencies"
+# Step 5: Fix dependencies
+pause_step "Step 5: Fix missing dependencies"
 apt-get install -f -y
 
-# Step 5: Deploy configuration
-pause_step "Step 5: Copy NXLog configuration file"
+# Step 6: Deploy configuration
+pause_step "Step 6: Copy NXLog configuration file"
 CONFIG_SRC="./configs/linux-nxlog.conf"
 CONFIG_DEST="/etc/nxlog/nxlog.conf"
 
@@ -73,15 +86,15 @@ else
     echo "Config file not found at $CONFIG_SRC"
 fi
 
-# Step 6: Enable and start NXLog
+# Step 7: Enable and start NXLog
 echo
-echo ">>> Step 6: Enable and start NXLog service"
+echo ">>> Step 7: Enable and start NXLog service"
 systemctl enable nxlog
 systemctl restart nxlog
 
-# Step 7: Verify service
+# Step 8: Verify service
 echo
-echo ">>> Step 7: Verify NXLog service status"
+echo ">>> Step 8: Verify NXLog service status"
 systemctl status nxlog --no-pager
 
 echo
