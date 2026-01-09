@@ -1,7 +1,7 @@
 # Grafana Cross-Platform Log & Event Monitor
 
 ## Status
-*Project in development (as of December 19, 2025). Configurations and dashboards may evolve — keep them updated.*
+*Project in development (as of January 06 2026). Configurations and dashboards may evolve — be sure to have the latest version*
 
 ## Overview
 **Grafana CPL & EM** provides centralized monitoring of Windows and Linux authentication events and system logs.  
@@ -31,9 +31,10 @@ It aggregates login activity, system events, error reports, and user‑managemen
 > Configuration files are in the `configs` folder. Update IP/PORT values as needed. Dashboards are in the `dashboards` folder.
 
 ## 📈 Dashboards
-### 1. Windows Login Monitor
-- Tracks successful and failed login attempts  
-- Highlights authentication errors and connection issues  
+### 1. Login Monitor
+- Tracks successful and failed login attempts from multiple soures, including SSH and RDP  
+- Data is shown in table, charts for easy reading
+- Usage of variable to select the correct user
 
 ### 2. System Error Monitor
 - Displays Linux and Windows system errors  
@@ -52,3 +53,6 @@ It aggregates login activity, system events, error reports, and user‑managemen
   - JSON-based structured data (easy parsing & querying)  
   - Compression support for bandwidth efficiency  
   - Extensible with custom fields (`_field`) for context  
+
+## How to install NXLog with the configuration files
+Scripts are available to make the installation faster and easier. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems 'install-linux.sh'. The script will get the latest version of NXLog for your system and install it. After that, it will copy the configuration files. Make sure to change the IP addresses in the NXLog configuration file after installation and restart the service!
