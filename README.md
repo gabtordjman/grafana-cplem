@@ -55,4 +55,8 @@ It aggregates login activity, system events, error reports, and user‑managemen
   - Extensible with custom fields (`_field`) for context  
 
 ## How to install NXLog with the configuration files
-Scripts are available to make the installation faster and easier. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems 'install-linux.sh'. The script will get the latest version of NXLog for your system and install it. After that, it will copy the configuration files. Make sure to change the IP addresses in the NXLog configuration file after installation and restart the service!
+Scripts are available to make the installation faster and easier. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems 'install-linux.sh'. 
+
+The script will get the latest version of NXLog for your system and install it. After that, it will copy the configuration files. 
+
+**Make sure to change the IP addresses in the NXLog configuration file after installation and restart the service!**
