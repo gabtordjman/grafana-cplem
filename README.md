@@ -18,6 +18,7 @@ It aggregates login activity, system events, error reports, and user‑managemen
 - Multiple dashboards tailored for specific use cases  
 - Intuitive Grafana visualizations (tables, time series, charts)  
 - Lightweight architecture using NXLog + Alloy
+- Recieve notifications by email
 
 ## 🏗️ Architecture
 **Flow:** Windows/Linux → NXLog → Alloy (Grafana Agent) → Loki → Grafana  
@@ -32,7 +33,8 @@ It aggregates login activity, system events, error reports, and user‑managemen
 
 ## 📈 Dashboards
 ### 1. Login Monitor
-- Tracks successful and failed login attempts from multiple soures, including SSH and RDP  
+- Tracks successful and failed login attempts from multiple soures, including SSH and RDP
+- Can also monitor Active Directory users that tried to logon 
 - Data is shown in table, charts for easy reading
 - Usage of variable to select the correct user
 
@@ -55,7 +57,7 @@ It aggregates login activity, system events, error reports, and user‑managemen
   - Extensible with custom fields (`_field`) for context  
 
 ## How to install NXLog with the configuration files
-Scripts are available to make the installation faster and easier. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems 'install-linux.sh'. 
+Scripts are available to make the installation faster and easier. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems `install-linux.sh`. 
 
 The script will get the latest version of NXLog for your system and install it. After that, it will copy the configuration files. 
 
