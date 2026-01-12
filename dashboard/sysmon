@@ -1,0 +1,269 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 7,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "cf6gwgsp02iv4c"
+      },
+      "description": "Ce tableau affiche les évènements sysmon qui ont été enregistrés dan l'observateur d'eélements",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hôte"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 273
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sévérité"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 102
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 183
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Utilisateur"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 176
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "full_message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 404
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_Image"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 460
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 365
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "cf6gwgsp02iv4c"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{service_name=\"loki.source.gelf.listen\"}\r\n| json\r\n| _Channel=\"Microsoft-Windows-Sysmon/Operational\"\r\n| _User=~\"$users\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Evenements sysmon",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "delimiter": ",",
+            "format": "json",
+            "jsonPaths": [
+              {
+                "path": "host"
+              },
+              {
+                "path": "_Severity"
+              },
+              {
+                "path": "_User"
+              },
+              {
+                "path": "_ip_address"
+              },
+              {
+                "path": "_Image"
+              },
+              {
+                "path": "_Product"
+              },
+              {
+                "path": "full_message"
+              }
+            ],
+            "source": "Line"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Line": true,
+              "id": true,
+              "labelTypes": true,
+              "labels": true,
+              "tsNs": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "_Image": "Image",
+              "_Product": "Produit",
+              "_Severity": "Sévérité",
+              "_User": "Utilisateur",
+              "_ip_address": "Adresse IP",
+              "full_message": "Message",
+              "host": "Hôte"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "MAINTENANCE\\\\\\\\michel",
+          "value": "MAINTENANCE\\\\\\\\michel"
+        },
+        "name": "users",
+        "options": [
+          {
+            "selected": true,
+            "text": "MAINTENANCE\\\\\\\\michel",
+            "value": "MAINTENANCE\\\\\\\\michel"
+          },
+          {
+            "selected": false,
+            "text": "MAINTENANCE\\\\\\\\tech",
+            "value": "MAINTENANCE\\\\\\\\tech"
+          }
+        ],
+        "query": "MAINTENANCE\\\\\\\\michel,MAINTENANCE\\\\\\\\tech",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "sysmon",
+  "uid": "ad9jw26",
+  "version": 9
+}
