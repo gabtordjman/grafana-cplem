@@ -26,7 +26,7 @@
         "type": "loki",
         "uid": "cf6gwgsp02iv4c"
       },
-      "description": "Affiche le total d'echec de connexion de la semaine pour les utilisateurs",
+      "description": "Affiche le total d'echec de connexion de la semaine pour l'utilisateur choisi",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -52,7 +52,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 10
               }
             ]
           }
@@ -66,7 +66,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 278
+                "value": 484
               }
             ]
           },
@@ -97,8 +97,8 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
+        "h": 8,
+        "w": 14,
         "x": 0,
         "y": 0
       },
@@ -119,12 +119,12 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum by (_TargetUserName) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"} \r\n    | json\r\n    | _EventID=\"4776\"\r\n    | _EventType=\"AUDIT_FAILURE\"\r\n    [1w]\r\n  )\r\n)\r\n",
+          "expr": "sum by (_TargetUserName, _EventType) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"}\r\n    | json\r\n    | _EventType=\"AUDIT_FAILURE\"\r\n    | _TargetUserName=~\"$users\"\r\n    [1w]\r\n  )\r\n)\r\n",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Week Log",
+      "title": "Week Log pour l'utilisateur",
       "transformations": [
         {
           "id": "reduce",
@@ -171,54 +171,46 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "{category=\"Authentifications réussies\"}"
+              "options": "{_EventType=\"AUDIT_SUCCESS\"}"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#34cb20",
+                  "fixedColor": "green",
                   "mode": "fixed"
                 }
-              },
-              {
-                "id": "displayName",
-                "value": "Authentifications reussies"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "{category=\"Authentifications échouées\"}"
+              "options": "{_EventType=\"AUDIT_FAILURE\"}"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#e50e0e",
+                  "fixedColor": "semi-dark-red",
                   "mode": "fixed"
                 }
-              },
-              {
-                "id": "displayName",
-                "value": "Authentifications échouées"
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 8,
+        "h": 8,
+        "w": 10,
+        "x": 14,
         "y": 0
       },
       "id": 7,
       "options": {
         "legend": {
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "pieType": "pie",
@@ -241,7 +233,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _TargetUserName=\"$users\" | _EventID=\"4776\" | _EventType=\"AUDIT_SUCCESS\" [1d])),\r\n  \"category\", \"Authentifications réussies\", \"job\", \".*\"\r\n)\r\n",
+          "expr": "sum by (_EventType) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"}\r\n    | json\r\n    | _EventType=\"AUDIT_FAILURE\"\r\n    | _TargetUserName=~\"$users\"\r\n    [1h]\r\n  )\r\n)\r\n",
           "queryType": "range",
           "refId": "A"
         },
@@ -252,14 +244,399 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _TargetUserName=\"$users\" | _EventID=\"4776\" | _EventType=\"AUDIT_FAILURE\" [1d])),\r\n  \"category\", \"Authentifications échouées\", \"job\", \".*\"\r\n)\r\n",
+          "expr": "sum by (_EventType) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"}\r\n    | json\r\n    | _EventType=\"AUDIT_SUCCESS\"\r\n    | _TargetUserName=~\"$users\"\r\n    [1h]\r\n  )\r\n)",
           "hide": false,
           "queryType": "range",
           "refId": "B"
         }
       ],
-      "title": "Authentifications pour l'utilisateur",
+      "title": "Pie - Authentifications pour l'utilisateur",
       "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "cf6gwgsp02iv4c"
+      },
+      "description": "Regroupe les authentifications reussies.\nFonctionne pour Windows et Linux. Affiche les connexions SSH et RDP, ainsi que les authentifications classiques Windows local/AD",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "message"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "pattern": "^AUDIT_FAILURE\\b.*",
+                      "result": {
+                        "index": 0,
+                        "text": "Echec de l'authentification"
+                      }
+                    },
+                    "type": "regex"
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 528
+              },
+              {
+                "id": "custom.width",
+                "value": 454
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Line"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 5107
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 194
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "utilisateur"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 145
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "domaine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 127
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "machine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 161
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "labels"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 91
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_EventID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 73
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 64
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Type d'évènement"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 165
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "short_message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 501
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "auth_message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 595
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "message"
+            },
+            "properties": []
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_Channel"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 107
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Utilisateur"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 149
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 161
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "full_message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 549
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hôte"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 122
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 14,
+        "x": 0,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Time"
+          }
+        ]
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{job=\"loki.source.gelf.listen\"} \r\n| json \r\n| ( _EventID=\"1149\" or (_EventType=\"AUDIT_SUCCESS\" and _SubjectUserName=\"$users\" and _User=\"$windows\") \r\nor (_SourceModuleType=\"im_systemd\" and _User=\"$linux\") \r\nor _SourceModuleType=\"im_uds\" )",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Succès",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "delimiter": ",",
+            "format": "json",
+            "jsonPaths": [
+              {
+                "path": "host"
+              },
+              {
+                "path": "short_message"
+              },
+              {
+                "path": "full_message"
+              }
+            ],
+            "source": "labels"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Line": true,
+              "_EventType": true,
+              "id": true,
+              "labelTypes": true,
+              "labels": true,
+              "tsNs": true,
+              "username": false
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "full_message": "Message",
+              "host": "Hôte"
+            }
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "substring",
+                  "options": {
+                    "value": "on tty1"
+                  }
+                },
+                "fieldName": "short_message"
+              },
+              {
+                "config": {
+                  "id": "substring",
+                  "options": {
+                    "value": "ROOT LOGIN"
+                  }
+                },
+                "fieldName": "short_message"
+              },
+              {
+                "config": {
+                  "id": "substring",
+                  "options": {
+                    "value": "Services Bureau à distance"
+                  }
+                },
+                "fieldName": "short_message"
+              },
+              {
+                "config": {
+                  "id": "substring",
+                  "options": {
+                    "value": "Accepted password for"
+                  }
+                },
+                "fieldName": "short_message"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "datasource": {
@@ -359,14 +736,44 @@
                 "value": "Authentifications échouées"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{_EventType=\"AUDIT_FAILURE\", _TargetUserName=\"tech\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{_EventType=\"AUDIT_SUCCESS\", _TargetUserName=\"tech\"}"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
         "h": 8,
-        "w": 7,
-        "x": 0,
-        "y": 7
+        "w": 10,
+        "x": 14,
+        "y": 8
       },
       "id": 8,
       "options": {
@@ -387,12 +794,24 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "label_replace(\r\n  sum(count_over_time({job=\"loki.source.gelf.listen\"} | json | _EventID=\"4776\" | _TargetUserName=\"$users\" | _EventType=\"AUDIT_FAILURE\" [1d])),\r\n  \"category\", \"Authentifications échouées\", \"job\", \".*\"\r\n)\r\n",
+          "expr": "sum by (_TargetUserName, _EventType) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"}\r\n    | json\r\n    | _EventType=\"AUDIT_FAILURE\"\r\n    | _TargetUserName=~\"$users\"\r\n    [1w]\r\n  )\r\n)\r\n",
           "queryType": "range",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "cf6gwgsp02iv4c"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "sum by (_TargetUserName, _EventType) (\r\n  count_over_time(\r\n    {job=\"loki.source.gelf.listen\"}\r\n    | json\r\n    | _EventType=\"AUDIT_SUCCESS\"\r\n    | _TargetUserName=~\"$users\"\r\n    [1w]\r\n  )\r\n)\r\n",
+          "hide": false,
+          "queryType": "range",
+          "refId": "B"
         }
       ],
-      "title": "Authentifications pour l'utilisateur",
+      "title": "Graph - Authentifications pour l'utilisateur",
       "type": "timeseries"
     },
     {
@@ -400,7 +819,7 @@
         "type": "loki",
         "uid": "cf6gwgsp02iv4c"
       },
-      "description": "Voir qui a ouvert sa session dernièrement ou qui a échoué a s'authentifier",
+      "description": "Regroupe les authentifications échouées.\nFonctionne pour Windows et Linux. Affiche les connexions SSH et RDP, ainsi que les authentifications classiques Windows local/AD",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -455,7 +874,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 205
+                "value": 528
               },
               {
                 "id": "custom.width",
@@ -531,7 +950,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 263
+                "value": 91
               }
             ]
           },
@@ -543,7 +962,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 99
+                "value": 73
               }
             ]
           },
@@ -637,23 +1056,47 @@
                 "value": 161
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "full_message"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 549
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hôte"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 281
+              }
+            ]
           }
         ]
       },
       "gridPos": {
         "h": 8,
-        "w": 17,
-        "x": 7,
-        "y": 7
+        "w": 14,
+        "x": 0,
+        "y": 16
       },
-      "id": 5,
+      "id": 12,
       "options": {
         "cellHeight": "sm",
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Message"
+            "displayName": "Time"
           }
         ]
       },
@@ -662,12 +1105,12 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{job=\"loki.source.gelf.listen\"}\r\n| json\r\n| _TargetUserName=\"$users\"\r\n| label_format message=\"{{._EventType}} - {{.short_message}}\"\r\n",
+          "expr": "{job=\"loki.source.gelf.listen\"}\r\n| json\r\n| (\r\n    _EventID=\"1149\" \r\n    or (_EventType=\"AUDIT_FAILURE\" and _TargetUserName=\"$users\") \r\n    or (_SourceModuleType=\"im_systemd\" and _User=\"$users\")\r\n    or (_SourceModuleType=\"im_uds\")\r\n  )\r\n",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Authentifications",
+      "title": "Echecs",
       "transformations": [
         {
           "id": "extractFields",
@@ -676,22 +1119,10 @@
             "format": "json",
             "jsonPaths": [
               {
-                "path": "_EventType"
-              },
-              {
-                "path": "_EventID"
-              },
-              {
-                "path": "_Channel"
-              },
-              {
-                "path": "message"
-              },
-              {
                 "path": "host"
               },
               {
-                "path": "_TargetUserName"
+                "path": "short_message"
               }
             ],
             "source": "labels"
@@ -702,23 +1133,47 @@
           "options": {
             "excludeByName": {
               "Line": true,
+              "_EventType": true,
               "id": true,
               "labelTypes": true,
               "labels": true,
-              "tsNs": true
+              "tsNs": true,
+              "username": false
             },
             "includeByName": {},
             "indexByName": {},
             "renameByName": {
-              "_Channel": "",
-              "_EventID": "ID",
-              "_EventType": "Type d'évènement",
-              "_TargetUserName": "Utilisateur",
-              "host": "Machine",
-              "labelTypes": "",
-              "short_message": "Message",
-              "tsNs": ""
+              "full_message": "Message",
+              "host": "Hôte",
+              "short_message": "Message"
             }
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "substring",
+                  "options": {
+                    "value": "échoué"
+                  }
+                },
+                "fieldName": "Message"
+              },
+              {
+                "config": {
+                  "id": "substring",
+                  "options": {
+                    "value": "Failed password"
+                  }
+                },
+                "fieldName": "Message"
+              }
+            ],
+            "match": "any",
+            "type": "include"
           }
         }
       ],
@@ -732,34 +1187,99 @@
     "list": [
       {
         "current": {
-          "text": "Utilisateur",
-          "value": "Utilisateur"
+          "text": "michel",
+          "value": "michel"
         },
         "name": "users",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "Utilisateur",
             "value": "Utilisateur"
           },
           {
             "selected": false,
-            "text": "Tech",
-            "value": "Tech"
+            "text": "tech",
+            "value": "tech"
+          },
+          {
+            "selected": true,
+            "text": "michel",
+            "value": "michel"
+          },
+          {
+            "selected": false,
+            "text": "deb1",
+            "value": "deb1"
           }
         ],
-        "query": "Utilisateur, Tech",
+        "query": "Utilisateur,tech,michel,deb1",
         "type": "custom"
+      },
+      {
+        "current": {
+          "text": "michel@MAINTENANCE.lab",
+          "value": "michel@MAINTENANCE.lab"
+        },
+        "datasource": {
+          "type": "marcusolsson-static-datasource",
+          "uid": "cf7a4meb7wdmoa"
+        },
+        "definition": "",
+        "name": "linux",
+        "options": [],
+        "query": {
+          "frame": {
+            "fields": [],
+            "meta": {
+              "custom": {
+                "customCode": "\n\nreturn ['$users@MAINTENANCE.lab']",
+                "valuesEditor": "custom"
+              }
+            }
+          }
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "MAINTENANCE\\\\michel",
+          "value": "MAINTENANCE\\\\michel"
+        },
+        "datasource": {
+          "type": "marcusolsson-static-datasource",
+          "uid": "cf7a4meb7wdmoa"
+        },
+        "definition": "",
+        "description": "",
+        "name": "windows",
+        "options": [],
+        "query": {
+          "frame": {
+            "fields": [],
+            "meta": {
+              "custom": {
+                "customCode": "\n\nreturn ['MAINTENANCE\\\\\\\\$users']",
+                "valuesEditor": "custom"
+              }
+            }
+          }
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Monitor LOGON/LOGOFF",
   "uid": "adb9fmt",
-  "version": 80
+  "version": 126
 }
