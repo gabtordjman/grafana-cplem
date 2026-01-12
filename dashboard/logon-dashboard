@@ -544,7 +544,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{job=\"loki.source.gelf.listen\"} \r\n| json \r\n| ( _EventID=\"1149\" or (_EventType=\"AUDIT_SUCCESS\" and _SubjectUserName=\"$users\" and _User=\"$windows\") \r\nor (_SourceModuleType=\"im_systemd\" and _User=\"$linux\") \r\nor _SourceModuleType=\"im_uds\" )",
+          "expr": "{job=\"loki.source.gelf.listen\"}\r\n| json\r\n| ((_EventType=\"AUDIT_SUCCESS\" and _TargetUserName=\"$users\") \r\n   or _EventID=\"1149\" \r\n   or (_SourceModuleType=\"im_systemd\" and full_message=~\".*(${linux}).*\") \r\n   or _SourceModuleType=\"im_uds\")\r\n",
           "queryType": "range",
           "refId": "A"
         }
@@ -598,37 +598,37 @@
                 "config": {
                   "id": "substring",
                   "options": {
-                    "value": "on tty1"
+                    "value": "Bureau à distance"
                   }
                 },
-                "fieldName": "short_message"
+                "fieldName": "Message"
               },
               {
                 "config": {
                   "id": "substring",
                   "options": {
-                    "value": "ROOT LOGIN"
+                    "value": "Un ticket d’authentification Kerberos (TGT) a été demandé"
                   }
                 },
-                "fieldName": "short_message"
+                "fieldName": "Message"
               },
               {
                 "config": {
                   "id": "substring",
                   "options": {
-                    "value": "Services Bureau à distance"
+                    "value": "Started Session"
                   }
                 },
-                "fieldName": "short_message"
+                "fieldName": "Message"
               },
               {
                 "config": {
                   "id": "substring",
                   "options": {
-                    "value": "Accepted password for"
+                    "value": "Une adhésion au groupe local d'un utilisateur a été énumérée."
                   }
                 },
-                "fieldName": "short_message"
+                "fieldName": "Message"
               }
             ],
             "match": "any",
@@ -740,7 +740,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "{_EventType=\"AUDIT_FAILURE\", _TargetUserName=\"tech\"}"
+              "options": "{_EventType=\"AUDIT_FAILURE\", _TargetUserName=\"deb1\"}"
             },
             "properties": [
               {
@@ -755,7 +755,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "{_EventType=\"AUDIT_SUCCESS\", _TargetUserName=\"tech\"}"
+              "options": "{_EventType=\"AUDIT_SUCCESS\", _TargetUserName=\"deb1\"}"
             },
             "properties": [
               {
@@ -1105,7 +1105,7 @@
         {
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{job=\"loki.source.gelf.listen\"}\r\n| json\r\n| (\r\n    _EventID=\"1149\" \r\n    or (_EventType=\"AUDIT_FAILURE\" and _TargetUserName=\"$users\") \r\n    or (_SourceModuleType=\"im_systemd\" and _User=\"$users\")\r\n    or (_SourceModuleType=\"im_uds\")\r\n  )\r\n",
+          "expr": "{job=\"loki.source.gelf.listen\"}\r\n| json\r\n| ((_EventType=\"AUDIT_FAILURE\" and _TargetUserName=\"$users\") \r\n   or _EventID=\"1149\" \r\n   or (_SourceModuleType=\"im_systemd\" and full_message=~\".*(${linux}).*\") \r\n   or _SourceModuleType=\"im_uds\")\r\n",
           "queryType": "range",
           "refId": "A"
         }
@@ -1157,7 +1157,7 @@
                 "config": {
                   "id": "substring",
                   "options": {
-                    "value": "échoué"
+                    "value": "La pré-authentification Kerberos a échoué."
                   }
                 },
                 "fieldName": "Message"
@@ -1166,7 +1166,7 @@
                 "config": {
                   "id": "substring",
                   "options": {
-                    "value": "Failed password"
+                    "value": " FAILED LOGIN"
                   }
                 },
                 "fieldName": "Message"
@@ -1187,8 +1187,8 @@
     "list": [
       {
         "current": {
-          "text": "michel",
-          "value": "michel"
+          "text": "deb1",
+          "value": "deb1"
         },
         "name": "users",
         "options": [
@@ -1203,12 +1203,12 @@
             "value": "tech"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "michel",
             "value": "michel"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "deb1",
             "value": "deb1"
           }
@@ -1218,8 +1218,8 @@
       },
       {
         "current": {
-          "text": "michel@MAINTENANCE.lab",
-          "value": "michel@MAINTENANCE.lab"
+          "text": "deb1@MAINTENANCE.lab",
+          "value": "deb1@MAINTENANCE.lab"
         },
         "datasource": {
           "type": "marcusolsson-static-datasource",
@@ -1245,8 +1245,8 @@
       },
       {
         "current": {
-          "text": "MAINTENANCE\\\\michel",
-          "value": "MAINTENANCE\\\\michel"
+          "text": "MAINTENANCE\\\\deb1",
+          "value": "MAINTENANCE\\\\deb1"
         },
         "datasource": {
           "type": "marcusolsson-static-datasource",
@@ -1274,12 +1274,12 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Monitor LOGON/LOGOFF",
   "uid": "adb9fmt",
-  "version": 126
+  "version": 130
 }
