@@ -50,7 +50,15 @@ It aggregates login activity, system events, error reports, and user‑managemen
 ### 3. Unified Events & Errors Dashboard
 - Consolidates authentication events and system errors in one view  
 - Uses **business inputs** and dynamic variables (hostname, IP)  
-- Enables flexible, dynamic filtering across the infrastructure  
+- Enables flexible, dynamic filtering across the infrastructure
+
+### 4. Sysmon Dashboard
+- Shows sysmon events as they appear in the event monitor on Windows
+
+### 5. AIO Dashboard
+- Use of Prometheus and Windows_Exporter to show status about RAM and CPU.
+- The goal of these dashboards is to monitor logs, so this one is just for information
+
 
 ## Log Ingestion (GELF)
 **GELF (Graylog Extended Log Format)** ensures structured, efficient log collection.  
@@ -61,9 +69,15 @@ It aggregates login activity, system events, error reports, and user‑managemen
   - Compression support for bandwidth efficiency  
   - Extensible with custom fields (`_field`) for context  
 
-## How to install NXLog with the configuration files
-Scripts are available to make the installation faster and easier. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems `install-linux.sh`. 
+## Installation with Ansible
 
-The script will get the latest version of NXLog for your system and install it. After that, it will copy the configuration files. 
+Two other repositories were created. `ansible-nxlog-windows` and `ansible-nxlog-linux`. Each repository contains a playbook that can
+install NXLog and copy the correct configuration. All instructions are specified in the `README.MD` of each repository. The playbook can be executed with no need of Internet access, because all of the files are in the `files` folder.
+
+
+## Installation with scripts
+You can also install NXLog and copy the configuration by using the provided scripts. For Windows, you can use the PowerShell script `install-windows.ps1` and for Linux based systems `install-linux.sh`. 
+
+The script will do the same stuff as Ansible, however, the machine needs to be connected to Internet because the repository will be cloned to get the different files. 
 
 **Make sure to change the IP addresses in the NXLog configuration file after installation and restart the service!**
