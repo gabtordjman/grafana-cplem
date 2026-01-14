@@ -71,8 +71,12 @@ It aggregates login activity, system events, error reports, and user‑managemen
 
 ## Installation with Ansible
 
-Two other repositories were created. `ansible-nxlog-windows` and `ansible-nxlog-linux`. Each repository contains a playbook that can
-install NXLog and copy the correct configuration. All instructions are specified in the `README.MD` of each repository. The playbook can be executed with no need of Internet access, because all of the files are in the `files` folder.
+Two other repositories were created. `ansible-nxlog-windows` and `ansible-nxlog-linux`. 
+Each repository contains a playbook that can
+install NXLog and copy the correct configuration. 
+
+All instructions are specified in the `README.MD` of each repository. 
+The playbook can be executed with no need of Internet access, because all of the files are in the `files` folder.
 
 
 ## Installation with scripts
