@@ -9,10 +9,10 @@ It aggregates login activity, system events, error reports, and user‑managemen
 
 ## 📸 Screenshots
 ![Logon Dashboard](images/logon-dashboard.png)
-![Logs Dashboard](images/logs-dashboard.png)  
+![Logs Dashboard](images/logs-dashboard.PNG)  
 ![Events Dashboard](images/events-dashboard.png)
-![AIO Dashboard](images/aio-dashboard.png)
-![Sysmon Dashboard](images/sysmon-dashboard.png)
+![AIO Dashboard](images/aio-dashboard.PNG)
+![Sysmon Dashboard](images/sysmon-dashboard.PNG)
 
 
 
