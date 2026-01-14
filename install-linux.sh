@@ -2,6 +2,7 @@
 set -e
 
 # NXLog Installation Script for Debian
+# Made by DeepSeek AI and Gabriel TORDJMAN
 # ------------------------------------
 # This script installs NXLog Community Edition on Debian systems.
 # It performs the following steps:

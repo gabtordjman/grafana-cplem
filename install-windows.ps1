@@ -1,5 +1,6 @@
 <#
 NXLog Installation Script for Windows
+Made by DeepSeek AI and Gabriel TORDJMAN
 -------------------------------------
 This script installs NXLog Community Edition on Windows systems.
 Steps:
