@@ -28,6 +28,18 @@ pause_step() {
 
 echo "=== NXLog Installation Script for Debian ==="
 
+# Distro check: only Debian/Ubuntu supported (package is a .deb for Debian 11 amd64)
+if ! command -v dpkg &> /dev/null || ! grep -qiE "debian|ubuntu" /etc/os-release 2>/dev/null; then
+    echo "Error: This script only supports Debian/Ubuntu-based systems."
+    echo "       The bundled NXLog package is a .deb built for Debian 11 amd64."
+    exit 1
+fi
+if [ "$(uname -m)" != "x86_64" ]; then
+    echo "Error: The bundled NXLog package requires an x86_64 (amd64) architecture."
+    echo "       Current architecture: $(uname -m)"
+    exit 1
+fi
+
 # Step 1: Install prerequisites
 pause_step "Step 1: Update system and install prerequisites (git, wget, curl)"
 apt-get update -y

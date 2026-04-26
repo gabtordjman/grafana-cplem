@@ -23,7 +23,7 @@ It aggregates login activity, system events, error reports, and user‑managemen
 - Multiple dashboards tailored for specific use cases  
 - Intuitive Grafana visualizations (tables, time series, charts)  
 - Lightweight architecture using NXLog + Alloy
-- Recieve notifications by email
+- Receive notifications by email
 
 ## 🏗️ Architecture
 **Flow:** Windows/Linux → NXLog → Alloy (Grafana Agent) → Loki → Grafana  
@@ -34,11 +34,11 @@ It aggregates login activity, system events, error reports, and user‑managemen
 3. **Loki** – Structured log storage  
 4. **Grafana** – Visualization & dashboards  
 
-> Configuration files are in the `configs` folder. Update IP/PORT values as needed. Dashboards are in the `dashboards` folder.
+> Configuration files are in the `configs` folder. Update IP/PORT values as needed. Dashboards are in the `dashboard` folder.
 
 ## 📈 Dashboards
 ### 1. Login Monitor
-- Tracks successful and failed login attempts from multiple soures, including SSH and RDP
+- Tracks successful and failed login attempts from multiple sources, including SSH and RDP
 - Can also monitor Active Directory users that tried to logon 
 - Data is shown in table, charts for easy reading
 - Usage of variable to select the correct user
